@@ -42,6 +42,7 @@ class Calendar extends Component {
       this.y = (index - this.x) / this.width
       this.setBoundaries()
 
+      // TODO: make this algo more readable
       slots.map((slot, item) => {
         let selected = this.inside(
           item % this.width,
@@ -53,7 +54,7 @@ class Calendar extends Component {
           slot.selected = this.currentAction === 'adding'
         } else {
           if (slot.flagSelection === this.currentFlagSelection) {
-            slot.selected = this.currentAction === 'adding'
+            slot.selected = !(this.currentAction === 'adding')
           }
         }
         return slot
