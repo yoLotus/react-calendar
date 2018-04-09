@@ -37,7 +37,6 @@ class Calendar extends Component {
   onMouseEnter = index => {
     if (this.state.recording) {
       let slots = this.state.slots.slice()
-      slots[index].visited = true
       this.x = index % this.width
       this.y = (index - this.x) / this.width
       this.setBoundaries()
@@ -50,7 +49,9 @@ class Calendar extends Component {
         )
 
         if (selected) {
-          slot.flagSelection = this.currentFlagSelection
+          slot.flagSelection = slot.selected
+            ? this.flagSelection
+            : this.currentFlagSelection
           slot.selected = this.currentAction === 'adding'
         } else {
           if (slot.flagSelection === this.currentFlagSelection) {
@@ -99,7 +100,6 @@ class Calendar extends Component {
 
   clean = _ => {
     let slots = this.state.slots.slice()
-    slots.forEach(slot => (slot.visited = false))
     this.setState({ slots, recording: false })
   }
 
