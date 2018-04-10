@@ -11,7 +11,6 @@ class Calendar extends Component {
     this.maxY = null
     this.x = null
     this.y = null
-    this.currentFlagSelection = 0
 
     this.state = {
       slots: []
@@ -24,12 +23,15 @@ class Calendar extends Component {
   onClickDown = index => {
     this.x = this.startX = this.minX = this.maxX = index % this.width
     this.y = this.startY = this.minY = this.maxY = (index - this.x) / this.width
-    this.currentFlagSelection += 1
+    let slots = this.state.slots.slice().map(s => ({
+      ...s,
+      initialSelectionState: s.selected
+    }))
     this.currentAction = this.state.slots[index].selected
       ? 'deletion'
       : 'adding'
 
-    this.setState({ recording: true }, () => this.onMouseEnter(index))
+    this.setState({ recording: true, slots }, () => this.onMouseEnter(index))
   }
 
   onClickUp = _ => this.clean()
@@ -43,21 +45,17 @@ class Calendar extends Component {
 
       // TODO: make this algo more readable
       slots.map((slot, item) => {
-        let selected = this.inside(
+        let inside = this.inside(
           item % this.width,
           (item - item % this.width) / this.width
         )
 
-        if (selected) {
-          slot.flagSelection = slot.selected
-            ? this.flagSelection
-            : this.currentFlagSelection
+        if (inside) {
           slot.selected = this.currentAction === 'adding'
         } else {
-          if (slot.flagSelection === this.currentFlagSelection) {
-            slot.selected = !(this.currentAction === 'adding')
-          }
+          slot.selected = slot.initialSelectionState
         }
+
         return slot
       })
 
@@ -69,25 +67,21 @@ class Calendar extends Component {
 
   setBoundaries = () => {
     if (this.x >= this.startX && this.y >= this.startY) {
-      console.log('1!')
       this.minX = this.startX
       this.minY = this.startY
       this.maxX = this.x
       this.maxY = this.y
     } else if (this.x >= this.startX && this.y <= this.startY) {
-      console.log('2!')
       this.minX = this.startX
       this.minY = this.y
       this.maxX = this.x
       this.maxY = this.startY
     } else if (this.x < this.startX && this.y <= this.startY) {
-      console.log('3!')
       this.minX = this.x
       this.minY = this.y
       this.maxX = this.startX
       this.maxY = this.startY
     } else {
-      console.log('4!')
       this.minX = this.x
       this.minY = this.startY
       this.maxX = this.startX
